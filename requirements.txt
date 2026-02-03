@@ -10,3 +10,4 @@ reportlab
 pandas
 patool
 Werkzeug
+gunicorn
