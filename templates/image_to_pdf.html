@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل الصور إلى PDF - أداة متقدمة</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --border-color: #ddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #1a5276);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .upload-section, .preview-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--light-color);
+        }
+        
+        .controls-section {
+            flex: 1.5;
+            min-width: 300px;
+        }
+        
+        .control-group {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .control-group h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        select, input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .range-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .crop-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .crop-preview {
+            margin-top: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            height: 300px;
+            background-color: #f8f8f8;
+        }
+        
+        .crop-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .crop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .crop-box {
+            position: absolute;
+            border: 2px dashed var(--danger-color);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .preview-area {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+            background-color: #f8f8f8;
+        }
+        
+        .preview-area img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-reset {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            background-color: #fde8e8;
+            color: var(--danger-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .success-message {
+            background-color: #e8f7ef;
+            color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .crop-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ تحويل الصور إلى PDF</h1>
+            <p>أداة متقدمة لتحويل الصور إلى ملفات PDF مع إمكانيات تحكم متقدمة في القص والتحجيم</p>
+        </header>
+        
+        <form id="pdfForm" method="POST" enctype="multipart/form-data" class="content">
+            <!-- قسم رفع الملف -->
+            <section class="upload-section">
+                <div class="control-group">
+                    <h3>رفع الصورة</h3>
+                    <div class="form-group">
+                        <label for="fileInput">اختر صورة للتحويل:</label>
+                        <input type="file" id="fileInput" name="file" accept="image/*" required>
+                    </div>
+                    
+                    <div id="fileInfo" class="file-info hidden">
+                        <div class="info-row">
+                            <span>اسم الملف:</span>
+                            <span id="fileName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span>حجم الصورة:</span>
+                            <span id="imageSize">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span>نوع الملف:</span>
+                            <span id="fileType">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-area" id="imagePreview">
+                        <p>ستظهر معاينة الصورة هنا</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- قسم التحكم -->
+            <section class="controls-section">
+                <!-- إعدادات حجم الصفحة -->
+                <div class="control-group">
+                    <h3>إعدادات الصفحة</h3>
+                    <div class="form-group">
+                        <label for="pageSize">حجم الصفحة:</label>
+                        <select id="pageSize" name="page_size">
+                            <option value="A4">A4 (595×842 نقطة)</option>
+                            <option value="A5">A5 (420×595 نقطة)</option>
+                            <option value="Letter">Letter (612×792 نقطة)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>توجه الصفحة:</label>
+                        <div>
+                            <input type="radio" id="portrait" name="orientation" value="portrait" checked>
+                            <label for="portrait" style="display: inline; margin-right: 15px;">عمودي</label>
+                            
+                            <input type="radio" id="landscape" name="orientation" value="landscape">
+                            <label for="landscape" style="display: inline;">أفقي</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageQuality">جودة الصورة في PDF:</label>
+                        <div class="range-container">
+                            <input type="range" id="imageQuality" name="quality" min="50" max="100" value="90">
+                            <span class="range-value" id="qualityValue">90%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إعدادات القص -->
+                <div class="control-group">
+                    <h3>قص الصورة</h3>
+                    <div class="crop-controls">
+                        <div class="form-group">
+                            <label for="cropLeft">اليسار (px):</label>
+                            <input type="number" id="cropLeft" name="crop_left" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="cropTop">الأعلى (px):</label>
+                            <input type="number" id="cropTop" name="crop_top" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="cropRight">اليمين (px):</label>
+                            <input type="number" id="cropRight" name="crop_right" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="cropBottom">الأسفل (px):</label>
+                            <input type="number" id="cropBottom" name="crop_bottom" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>معاينة القص:</label>
+                        <div class="crop-preview" id="cropPreview">
+                            <p>سيظهر معاينة القص هنا بعد رفع الصورة</p>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" id="resetCrop" class="btn-reset">إعادة تعيين القص</button>
+                    </div>
+                </div>
+                
+                <!-- إعدادات إضافية -->
+                <div class="control-group">
+                    <h3>إعدادات إضافية</h3>
+                    <div class="form-group">
+                        <label for="marginSize">هامش الصفحة (نقاط):</label>
+                        <div class="range-container">
+                            <input type="range" id="marginSize" name="margin" min="0" max="50" value="10">
+                            <span class="range-value" id="marginValue">10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imagePosition">موضع الصورة في الصفحة:</label>
+                        <select id="imagePosition" name="position">
+                            <option value="center">في المنتصف</option>
+                            <option value="top">أعلى الصفحة</option>
+                            <option value="bottom">أسفل الصفحة</option>
+                            <option value="stretch">تمديد لملء الصفحة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pdfName">اسم ملف PDF:</label>
+                        <input type="text" id="pdfName" name="pdf_name" placeholder="أدخل اسم ملف PDF">
+                    </div>
+                </div>
+                
+                <!-- رسائل الخطأ والنجاح -->
+                {% if error %}
+                <div class="error-message">
+                    <strong>خطأ:</strong> {{ error }}
+                </div>
+                {% endif %}
+                
+                <!-- أزرار التحكم -->
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">تحويل إلى PDF</button>
+                    <button type="button" id="previewBtn" class="btn-secondary">معاينة الإعدادات</button>
+                    <button type="reset" class="btn-reset">إعادة تعيين الكل</button>
+                </div>
+            </section>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const cropPreview = document.getElementById('cropPreview');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const imageSize = document.getElementById('imageSize');
+            const fileType = document.getElementById('fileType');
+            const cropLeft = document.getElementById('cropLeft');
+            const cropTop = document.getElementById('cropTop');
+            const cropRight = document.getElementById('cropRight');
+            const cropBottom = document.getElementById('cropBottom');
+            const resetCropBtn = document.getElementById('resetCrop');
+            const imageQuality = document.getElementById('imageQuality');
+            const qualityValue = document.getElementById('qualityValue');
+            const marginSize = document.getElementById('marginSize');
+            const marginValue = document.getElementById('marginValue');
+            const pageSize = document.getElementById('pageSize');
+            const orientation = document.querySelectorAll('input[name="orientation"]');
+            const previewBtn = document.getElementById('previewBtn');
+            const pdfName = document.getElementById('pdfName');
+            
+            let originalImage = null;
+            let originalWidth = 0;
+            let originalHeight = 0;
+            
+            // معالجة اختيار الملف
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // عرض معلومات الملف
+                fileInfo.classList.remove('hidden');
+                fileName.textContent = file.name;
+                fileType.textContent = file.type;
+                
+                // عرض معاينة الصورة
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // عرض الصورة في معاينة الصفحة
+                    imagePreview.innerHTML = `<img src="${e.target.result}" id="previewImage">`;
+                    
+                    // إنشاء صورة لمعاينة القص
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        originalWidth = img.width;
+                        originalHeight = img.height;
+                        
+                        // تحديث معلومات حجم الصورة
+                        imageSize.textContent = `${img.width} × ${img.height} بكسل`;
+                        
+                        // إعادة تعيين قيم القص
+                        cropRight.value = img.width;
+                        cropBottom.value = img.height;
+                        
+                        // عرض معاينة القص
+                        updateCropPreview();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // تعيين اسم PDF افتراضي
+                const baseName = file.name.replace(/\.[^/.]+$/, "");
+                pdfName.value = baseName + ".pdf";
+            });
+            
+            // تحديث معاينة القص
+            function updateCropPreview() {
+                if (!originalImage) return;
+                
+                cropPreview.innerHTML = '';
+                
+                // إنشاء عنصر الصورة
+                const img = document.createElement('img');
+                img.src = originalImage.src;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '100%';
+                cropPreview.appendChild(img);
+                
+                // إنشاء مربع القص
+                const cropBox = document.createElement('div');
+                cropBox.className = 'crop-box';
+                
+                // حساب أبعاد وموضع مربع القص
+                const previewWidth = cropPreview.clientWidth;
+                const previewHeight = cropPreview.clientHeight;
+                
+                // حساب نسبة التحجيم
+                const scaleX = previewWidth / originalWidth;
+                const scaleY = previewHeight / originalHeight;
+                const scale = Math.min(scaleX, scaleY);
+                
+                // حساب أبعاد الصورة المعروضة
+                const displayedWidth = originalWidth * scale;
+                const displayedHeight = originalHeight * scale;
+                
+                // حساب الهوامش
+                const offsetX = (previewWidth - displayedWidth) / 2;
+                const offsetY = (previewHeight - displayedHeight) / 2;
+                
+                // تحديث موضع وأبعاد الصورة
+                img.style.width = displayedWidth + 'px';
+                img.style.height = displayedHeight + 'px';
+                img.style.position = 'absolute';
+                img.style.top = offsetY + 'px';
+                img.style.left = offsetX + 'px';
+                
+                // حساب أبعاد وموضع مربع القص
+                const left = parseInt(cropLeft.value) * scale + offsetX;
+                const top = parseInt(cropTop.value) * scale + offsetY;
+                const right = parseInt(cropRight.value) * scale + offsetX;
+                const bottom = parseInt(cropBottom.value) * scale + offsetY;
+                
+                const width = right - left;
+                const height = bottom - top;
+                
+                // تطبيق الأبعاد والموضع على مربع القص
+                cropBox.style.left = left + 'px';
+                cropBox.style.top = top + 'px';
+                cropBox.style.width = width + 'px';
+                cropBox.style.height = height + 'px';
+                
+                cropPreview.appendChild(cropBox);
+            }
+            
+            // تحديث معاينة القص عند تغيير القيم
+            [cropLeft, cropTop, cropRight, cropBottom].forEach(input => {
+                input.addEventListener('input', updateCropPreview);
+            });
+            
+            // إعادة تعيين القص
+            resetCropBtn.addEventListener('click', function() {
+                if (!originalImage) return;
+                
+                cropLeft.value = 0;
+                cropTop.value = 0;
+                cropRight.value = originalWidth;
+                cropBottom.value = originalHeight;
+                
+                updateCropPreview();
+            });
+            
+            // تحديث عرض قيمة الجودة
+            imageQuality.addEventListener('input', function() {
+                qualityValue.textContent = this.value + '%';
+            });
+            
+            // تحديث عرض قيمة الهامش
+            marginSize.addEventListener('input', function() {
+                marginValue.textContent = this.value;
+            });
+            
+            // معاينة الإعدادات
+            previewBtn.addEventListener('click', function() {
+                if (!originalImage) {
+                    alert('الرجاء رفع صورة أولاً');
+                    return;
+                }
+                
+                const pageType = pageSize.value;
+                const orientationValue = document.querySelector('input[name="orientation"]:checked').value;
+                const quality = imageQuality.value;
+                const margin = marginSize.value;
+                const position = document.getElementById('imagePosition').value;
+                
+                let pageSizeText = '';
+                switch(pageType) {
+                    case 'A4': pageSizeText = 'A4 (595×842 نقطة)'; break;
+                    case 'A5': pageSizeText = 'A5 (420×595 نقطة)'; break;
+                    case 'Letter': pageSizeText = 'Letter (612×792 نقطة)'; break;
+                }
+                
+                const message = `
+                إعدادات التحويل المحددة:
+                • حجم الصفحة: ${pageSizeText}
+                • التوجه: ${orientationValue === 'portrait' ? 'عمودي' : 'أفقي'}
+                • جودة الصورة: ${quality}%
+                • هامش الصفحة: ${margin} نقطة
+                • موضع الصورة: ${position}
+                • القص: ${cropLeft.value}, ${cropTop.value}, ${cropRight.value}, ${cropBottom.value}
+                `;
+                
+                alert(message);
+            });
+            
+            // تحديث معاينة القص عند تغيير حجم النافذة
+            window.addEventListener('resize', updateCropPreview);
+            
+            // التحقق من صحة النموذج قبل الإرسال
+            document.getElementById('pdfForm').addEventListener('submit', function(e) {
+                // التحقق من أن الملف تم رفعه
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    e.preventDefault();
+                    alert('الرجاء رفع صورة أولاً');
+                    return;
+                }
+                
+                // التحقق من صحة قيم القص
+                const left = parseInt(cropLeft.value);
+                const top = parseInt(cropTop.value);
+                const right = parseInt(cropRight.value);
+                const bottom = parseInt(cropBottom.value);
+                
+                if (left >= right || top >= bottom) {
+                    e.preventDefault();
+                    alert('قيم القص غير صالحة. يجب أن تكون قيمة اليسار أقل من اليمين والأعلى أقل من الأسفل.');
+                    return;
+                }
+                
+                // يمكن إضافة المزيد من التحقق هنا
+            });
+        });
+    </script>
+</body>
+</html>

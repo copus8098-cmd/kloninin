@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge PDF - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🔗 Merge PDF Files</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Combine Multiple PDFs</h2>
+            <p>Merge multiple PDF files into a single document in the order you want</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form" id="mergeForm">
+            <div class="file-input-area multiple">
+                <input type="file" name="files[]" id="files" accept=".pdf" multiple required>
+                <label for="files" class="file-label">
+                    <span class="upload-icon">📚</span>
+                    <span>Select PDF files (multiple)</span>
+                </label>
+                <p class="file-info" id="fileInfo">No files selected</p>
+            </div>
+
+            <div class="selected-files" id="selectedFiles">
+                <!-- Selected files will appear here -->
+            </div>
+
+            <div class="merge-controls">
+                <h3>Arrange Files:</h3>
+                <div class="file-list-container">
+                    <ul class="file-list" id="fileList">
+                        <!-- Files will be listed here -->
+                    </ul>
+                </div>
+                <div class="list-controls">
+                    <button type="button" class="list-btn" id="moveUp">↑ Move Up</button>
+                    <button type="button" class="list-btn" id="moveDown">↓ Move Down</button>
+                    <button type="button" class="list-btn" id="removeFile">🗑️ Remove</button>
+                </div>
+            </div>
+
+            <div class="merge-options">
+                <h3>Merge Options:</h3>
+                <div class="options-grid">
+                    <label class="option">
+                        <input type="checkbox" name="bookmarks" checked>
+                        Preserve bookmarks
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="metadata" checked>
+                        Keep metadata
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="compress">
+                        Compress output
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔗</span>
+                Merge PDF Files
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ol>
+                <li>Select multiple PDF files using the button above</li>
+                <li>Arrange files in the desired order using up/down buttons</li>
+                <li>Configure merge options</li>
+                <li>Click "Merge PDF Files" to create a single PDF</li>
+            </ol>
+            
+            <h3>Limits:</h3>
+            <ul>
+                <li>Maximum file size: 50 MB per file</li>
+                <li>Maximum total size: 200 MB</li>
+                <li>Maximum number of files: 50</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedFiles = [];
+
+document.getElementById('files').addEventListener('change', function(e) {
+    const files = Array.from(this.files);
+    const fileInfo = document.getElementById('fileInfo');
+    const selectedFilesDiv = document.getElementById('selectedFiles');
+    const fileList = document.getElementById('fileList');
+    
+    // Filter only PDF files
+    const pdfFiles = files.filter(file => file.name.toLowerCase().endsWith('.pdf'));
+    
+    if (pdfFiles.length > 0) {
+        // Add to selected files array
+        pdfFiles.forEach(file => {
+            if (!selectedFiles.some(f => f.name === file.name)) {
+                selectedFiles.push({
+                    file: file,
+                    id: Date.now() + Math.random()
+                });
+            }
+        });
+        
+        // Update UI
+        fileInfo.textContent = `Selected ${pdfFiles.length} PDF file(s)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        updateFileList();
+    } else {
+        fileInfo.textContent = 'No PDF files selected';
+        fileInfo.style.color = '#888';
+    }
+    
+    // Reset input
+    this.value = '';
+});
+
+function updateFileList() {
+    const fileList = document.getElementById('fileList');
+    const selectedFilesDiv = document.getElementById('selectedFiles');
+    
+    fileList.innerHTML = '';
+    selectedFilesDiv.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+    
+    selectedFiles.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.dataset.index = index;
+        li.innerHTML = `
+            <input type="checkbox" class="file-checkbox" data-index="${index}">
+            <span class="file-icon">📄</span>
+            <span class="file-name">${item.file.name}</span>
+            <span class="file-size">(${(item.file.size / 1024).toFixed(2)} KB)</span>
+            <span class="file-order">${index + 1}</span>
+        `;
+        fileList.appendChild(li);
+    });
+}
+
+// List controls
+document.getElementById('moveUp').addEventListener('click', function() {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    if (checked.length === 1) {
+        const index = parseInt(checked[0].dataset.index);
+        if (index > 0) {
+            // Swap with previous item
+            [selectedFiles[index], selectedFiles[index - 1]] = [selectedFiles[index - 1], selectedFiles[index]];
+            updateFileList();
+        }
+    }
+});
+
+document.getElementById('moveDown').addEventListener('click', function() {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    if (checked.length === 1) {
+        const index = parseInt(checked[0].dataset.index);
+        if (index < selectedFiles.length - 1) {
+            // Swap with next item
+            [selectedFiles[index], selectedFiles[index + 1]] = [selectedFiles[index + 1], selectedFiles[index]];
+            updateFileList();
+        }
+    }
+});
+
+document.getElementById('removeFile').addEventListener('click', function() {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    if (checked.length > 0) {
+        // Remove from highest index to lowest to avoid index issues
+        const indices = Array.from(checked).map(cb => parseInt(cb.dataset.index)).sort((a, b) => b - a);
+        indices.forEach(index => {
+            selectedFiles.splice(index, 1);
+        });
+        updateFileList();
+    }
+});
+
+// Form submission
+document.getElementById('mergeForm').addEventListener('submit', function(e) {
+    if (selectedFiles.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one PDF file.');
+        return;
+    }
+    
+    // Create new FormData with files in order
+    const newFormData = new FormData();
+    selectedFiles.forEach((item, index) => {
+        newFormData.append('files[]', item.file);
+    });
+    
+    // Add options
+    newFormData.append('bookmarks', document.querySelector('input[name="bookmarks"]').checked);
+    newFormData.append('metadata', document.querySelector('input[name="metadata"]').checked);
+    newFormData.append('compress', document.querySelector('input[name="compress"]').checked);
+    
+    // Replace form data
+    e.preventDefault();
+    
+    fetch('/merge-pdf', {
+        method: 'POST',
+        body: newFormData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'merged.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error merging PDFs. Please try again.');
+    });
+});
+</script>
+</body>
+</html>

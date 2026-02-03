@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Convert Pro{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>🎭 Remove Background (Simple)</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Simple Background Removal</h2>
+            <p>Basic background removal using image processing (for simple images)</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📷</span>
+                    <span>Select image (JPG or PNG)</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="instructions">
+                <h3>Tips for Best Results:</h3>
+                <ul>
+                    <li>Use images with high contrast between subject and background</li>
+                    <li>Simple backgrounds work best</li>
+                    <li>Images with solid color backgrounds give best results</li>
+                    <li>For complex images, use professional tools</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🎭</span>
+                Remove Background
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Limitations:</h3>
+            <ul>
+                <li>This is a simple background removal using basic image processing</li>
+                <li>Works best with images having solid color backgrounds</li>
+                <li>May not work well with complex or gradient backgrounds</li>
+                <li>For professional results, consider using AI-powered tools</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+    }
+});
+</script>
+{% endblock %}

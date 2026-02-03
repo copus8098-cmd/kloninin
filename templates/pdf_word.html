@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF ↔ Word - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📄 PDF ↔ Word Converter</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Convert Between PDF and Word</h2>
+            <p>Convert PDF to Word (DOCX) or Word to PDF with high quality</p>
+        </div>
+
+        <div class="conversion-options">
+            <div class="option-tabs">
+                <button class="tab-btn active" data-tab="pdf2word">PDF to Word</button>
+                <button class="tab-btn" data-tab="word2pdf">Word to PDF</button>
+            </div>
+
+            <!-- PDF to Word Form -->
+            <form method="POST" enctype="multipart/form-data" class="upload-form active" id="pdf2wordForm">
+                <input type="hidden" name="conversion_type" value="pdf2word">
+                
+                <div class="file-input-area">
+                    <input type="file" name="file" id="pdfFile" accept=".pdf" required>
+                    <label for="pdfFile" class="file-label">
+                        <span class="upload-icon">📄</span>
+                        <span>Select PDF file</span>
+                    </label>
+                    <p class="file-info" id="pdfFileInfo">No file selected</p>
+                </div>
+
+                <div class="conversion-settings">
+                    <h3>Conversion Settings:</h3>
+                    <div class="settings-grid">
+                        <div class="setting">
+                            <label>
+                                <input type="checkbox" name="preserve_layout" checked>
+                                Preserve layout
+                            </label>
+                        </div>
+                        <div class="setting">
+                            <label>
+                                <input type="checkbox" name="include_images" checked>
+                                Include images
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="convert-btn">
+                    <span class="btn-icon">🔄</span>
+                    Convert PDF to Word
+                </button>
+            </form>
+
+            <!-- Word to PDF Form -->
+            <form method="POST" enctype="multipart/form-data" class="upload-form" id="word2pdfForm">
+                <input type="hidden" name="conversion_type" value="word2pdf">
+                
+                <div class="file-input-area">
+                    <input type="file" name="file" id="wordFile" accept=".doc,.docx" required>
+                    <label for="wordFile" class="file-label">
+                        <span class="upload-icon">📝</span>
+                        <span>Select Word file</span>
+                    </label>
+                    <p class="file-info" id="wordFileInfo">No file selected</p>
+                </div>
+
+                <div class="conversion-settings">
+                    <h3>PDF Settings:</h3>
+                    <div class="settings-grid">
+                        <div class="setting">
+                            <label>Page Size:</label>
+                            <select name="page_size">
+                                <option value="A4">A4</option>
+                                <option value="Letter">Letter</option>
+                                <option value="Legal">Legal</option>
+                            </select>
+                        </div>
+                        <div class="setting">
+                            <label>Orientation:</label>
+                            <select name="orientation">
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="convert-btn">
+                    <span class="btn-icon">🔄</span>
+                    Convert Word to PDF
+                </button>
+            </form>
+        </div>
+
+        <div class="instructions">
+            <h3>Features:</h3>
+            <ul>
+                <li>High-quality conversion with formatting preserved</li>
+                <li>Support for images, tables, and lists</li>
+                <li>Fast conversion process</li>
+                <li>Secure - files are deleted after conversion</li>
+            </ul>
+            
+            <h3>Note:</h3>
+            <p>Word to PDF conversion requires Microsoft Word to be installed on the server.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Update active tab button
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Show active form
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.classList.remove('active');
+        });
+        document.getElementById(`${tab}Form`).classList.add('active');
+    });
+});
+
+// File input handlers
+document.getElementById('pdfFile').addEventListener('change', function(e) {
+    updateFileInfo(this, 'pdfFileInfo');
+});
+
+document.getElementById('wordFile').addEventListener('change', function(e) {
+    updateFileInfo(this, 'wordFileInfo');
+});
+
+function updateFileInfo(input, infoId) {
+    const fileInfo = document.getElementById(infoId);
+    if (input.files.length > 0) {
+        const file = input.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+    }
+}
+</script>
+</body>
+</html>

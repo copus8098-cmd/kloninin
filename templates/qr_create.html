@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate QR - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🔳 QR Code Generator</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Create QR Code</h2>
+            <p>Generate QR codes for URLs, text, contact info, and more</p>
+        </div>
+
+        <form method="POST" class="qr-form">
+            <div class="input-group">
+                <label for="data">Enter content for QR code:</label>
+                <textarea 
+                    id="data" 
+                    name="data" 
+                    placeholder="https://example.com or any text..." 
+                    rows="4"
+                    required></textarea>
+                <div class="qr-type-selector">
+                    <h3>QR Code Type:</h3>
+                    <div class="qr-types">
+                        <div class="qr-type">
+                            <input type="radio" id="type_url" name="qr_type" value="url" checked>
+                            <label for="type_url">🌐 URL/Link</label>
+                        </div>
+                        <div class="qr-type">
+                            <input type="radio" id="type_text" name="qr_type" value="text">
+                            <label for="type_text">📝 Plain Text</label>
+                        </div>
+                        <div class="qr-type">
+                            <input type="radio" id="type_email" name="qr_type" value="email">
+                            <label for="type_email">✉️ Email</label>
+                        </div>
+                        <div class="qr-type">
+                            <input type="radio" id="type_wifi" name="qr_type" value="wifi">
+                            <label for="type_wifi">📶 WiFi</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>QR Code Preview:</h3>
+                <div class="qr-preview" id="qrPreview">
+                    <div class="qr-placeholder">
+                        <div class="qr-pattern"></div>
+                        <p>QR code will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">⚡</span>
+                Generate QR Code
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Tips:</h3>
+            <ul>
+                <li>For URLs, include "https://" for better compatibility</li>
+                <li>QR codes can store up to 4,296 alphanumeric characters</li>
+                <li>Larger QR codes can store more information</li>
+                <li>Test your QR code before printing</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simple QR preview placeholder (actual generation happens server-side)
+document.getElementById('data').addEventListener('input', function() {
+    const preview = document.getElementById('qrPreview');
+    if (this.value.length > 0) {
+        preview.innerHTML = `
+            <div class="qr-placeholder">
+                <div class="qr-pattern active"></div>
+                <p>Preview for: ${this.value.substring(0, 30)}${this.value.length > 30 ? '...' : ''}</p>
+            </div>
+        `;
+    } else {
+        preview.innerHTML = `
+            <div class="qr-placeholder">
+                <div class="qr-pattern"></div>
+                <p>QR code will appear here</p>
+            </div>
+        `;
+    }
+});
+</script>
+</body>
+</html>

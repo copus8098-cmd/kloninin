@@ -1,0 +1,35 @@
+<div class="card">
+    <span class="icon">🧹</span>
+    <span class="label">EXIF Remover</span>
+
+    <form method="post" enctype="multipart/form-data" style="margin-top: 10px;">
+        <input type="file" name="file" required>
+        <button type="submit" style="margin-top:5px;">Upload & Clean</button>
+    </form>
+
+    {% if exif_before or exif_after %}
+    <div style="margin-top:10px; background:#f4f4f4; padding:8px; border-radius:5px;">
+        <strong>Original EXIF:</strong>
+        {% if exif_before %}
+            <pre>{{ exif_before }}</pre>
+        {% else %}
+            <p>No EXIF found</p>
+        {% endif %}
+
+        <strong>Cleaned EXIF:</strong>
+        {% if exif_after %}
+            <pre>{{ exif_after }}</pre>
+        {% else %}
+            <p>EXIF successfully removed ✔</p>
+        {% endif %}
+
+        <strong>Images:</strong>
+        <p>Original:</p>
+        <img src="/uploads/{{ original }}" style="max-width:150px; border:1px solid #ccc; border-radius:4px;">
+        <p>Cleaned:</p>
+        <img src="/uploads/{{ cleaned }}" style="max-width:150px; border:1px solid #ccc; border-radius:4px;">
+
+        <a href="/uploads/{{ cleaned }}" download style="display:inline-block;margin-top:5px; padding:5px 10px; background:#4CAF50;color:#fff;border-radius:4px;text-decoration:none;">⬇ Download</a>
+    </div>
+    {% endif %}
+</div>

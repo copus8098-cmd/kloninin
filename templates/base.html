@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Convert Pro{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ===== Navbar / شريط علوي ===== -->
+<header class="navbar">
+    <div class="container navbar-container">
+        <a href="/" class="navbar-logo">✨ Smart Convert Pro</a>
+        <nav class="navbar-links">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/image-to-pdf"><i class="fas fa-file-pdf"></i> Image to PDF</a>
+            <a href="/qr-create"><i class="fas fa-qrcode"></i> Generate QR</a>
+            <a href="/qr-read"><i class="fas fa-search"></i> Scan QR</a>
+            <a href="/merge-pdf"><i class="fas fa-object-group"></i> Merge PDF</a>
+            <a href="/json-to-excel"><i class="fas fa-table"></i> JSON to Excel</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ===== Main Content ===== -->
+<main class="container">
+    {% block content %}
+    <!-- المحتوى الرئيسي يأتي هنا من القوالب الأخرى -->
+    {% endblock %}
+</main>
+<div class="grid-menu">
+
+    <!-- IMAGE -->
+    <a href="/image-to-pdf" class="card">
+        <i class="fa-solid fa-file-image icon"></i>
+        <span class="label">Image → PDF</span>
+    </a>
+
+    <a href="/image-convert" class="card">
+        <i class="fa-solid fa-arrows-left-right icon"></i>
+        <span class="label">Image Format</span>
+    </a>
+
+    <a href="/resize-image" class="card">
+        <i class="fa-solid fa-expand icon"></i>
+        <span class="label">Resize Image</span>
+    </a>
+
+    <a href="/compress-image" class="card">
+        <i class="fa-solid fa-compress icon"></i>
+        <span class="label">Compress Image</span>
+    </a>
+
+    <a href="/image-to-text" class="card">
+        <i class="fa-solid fa-eye icon"></i>
+        <span class="label">Image → Text</span>
+    </a>
+
+    <a href="/text-to-image" class="card">
+        <i class="fa-solid fa-pen icon"></i>
+        <span class="label">Text → Image</span>
+    </a>
+
+    <a href="/remove-bg" class="card">
+        <i class="fa-solid fa-wand-magic-sparkles icon"></i>
+        <span class="label">Remove Background</span>
+    </a>
+
+    <!-- PDF -->
+    <a href="/merge-pdf" class="card">
+        <i class="fa-solid fa-object-group icon"></i>
+        <span class="label">Merge PDF</span>
+    </a>
+
+    <a href="/split-pdf" class="card">
+        <i class="fa-solid fa-scissors icon"></i>
+        <span class="label">Split PDF</span>
+    </a>
+
+    <a href="/compress-pdf" class="card">
+        <i class="fa-solid fa-file-zipper icon"></i>
+        <span class="label">Compress PDF</span>
+    </a>
+
+    <a href="/pdf-to-image" class="card">
+        <i class="fa-solid fa-images icon"></i>
+        <span class="label">PDF → Images</span>
+    </a>
+
+    <a href="/pdf-to-text" class="card">
+        <i class="fa-solid fa-file-lines icon"></i>
+        <span class="label">PDF → Text</span>
+    </a>
+
+    <a href="/pdf-word" class="card">
+        <i class="fa-solid fa-file-word icon"></i>
+        <span class="label">PDF → Word</span>
+    </a>
+
+    <a href="/word-to-pdf" class="card">
+        <i class="fa-solid fa-file-pdf icon"></i>
+        <span class="label">Word → PDF</span>
+    </a>
+
+    <!-- DATA -->
+    <a href="/json-to-excel" class="card">
+        <i class="fa-solid fa-database icon"></i>
+        <span class="label">JSON → Excel</span>
+    </a>
+
+    <a href="/json-to-csv" class="card">
+        <i class="fa-solid fa-file-csv icon"></i>
+        <span class="label">JSON → CSV</span>
+    </a>
+
+    <a href="/csv-to-excel" class="card">
+        <i class="fa-solid fa-table icon"></i>
+        <span class="label">CSV → Excel</span>
+    </a>
+
+    <a href="/excel-to-json" class="card">
+        <i class="fa-solid fa-chart-column icon"></i>
+        <span class="label">Excel → JSON</span>
+    </a>
+
+    <!-- QR -->
+    <a href="/qr/qr-create" class="card">
+        <i class="fa-solid fa-qrcode icon"></i>
+        <span class="label">Generate QR</span>
+    </a>
+
+    <a href="/qr/qr-read" class="card">
+        <i class="fa-solid fa-camera icon"></i>
+        <span class="label">Scan QR</span>
+    </a>
+
+    <!-- TEXT -->
+    <a href="/text-to-pdf" class="card">
+        <i class="fa-solid fa-file-lines icon"></i>
+        <span class="label">Text → PDF</span>
+    </a>
+
+    <a href="/docx-to-text" class="card">
+        <i class="fa-solid fa-file-word icon"></i>
+        <span class="label">DOCX → Text</span>
+    </a>
+    <a href="/rex" class="card">
+    <i class="fa-solid fa-broom icon"></i>
+    <span class="label">EXIF Remover</span>
+    </a>  
+<a href="/rar-to-zip" class="card">
+    <i class="fa-solid fa-file-archive icon"></i>
+    <span class="label">RAR → ZIP</span>
+</a>
+
+
+</div>
+
+<!-- ===== Footer ===== -->
+<footer>
+    <section class="tools-section">
+    <div class="section-header">
+        <h2><i class="fas fa-th"></i> All Conversion Tools</h2>
+        <p>Explore our full suite of file conversion tools</p>
+    </div>
+    
+   
+</section>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Smart Convert Pro</h3>
+                <p>We present an online OCR (Optical Character Recognition) service to extract text from images and convert various file formats.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Other Tools</h3>
+                <ul>
+                    <li><a href="/image-to-pdf">Image to PDF</a></li>
+                    <li><a href="/pdf-to-text">PDF to Text</a></li>
+                    <li><a href="/merge-pdf">Merge PDF</a></li>
+                    <li><a href="/text-to-pdf">Text to PDF</a></li>
+                    <li><a href="/json-to-excel">JSON to Excel</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-envelope"></i> support@smartconvertpro.com</p>
+                <p>We're here to help you with any questions about our conversion tools.</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>Copyright © 2023 Smart Convert Pro. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+{% block scripts %}
+<!-- JavaScript الخاص بكل صفحة يأتي هنا -->
+{% endblock %}
+
+</body>
+</html>

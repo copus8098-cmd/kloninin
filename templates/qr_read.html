@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+   {% extends "base.html" %}
+
+{% block title %}
+Scan QR - Smart Convert Pro
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>🔍 QR Code Scanner</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Scan QR Code</h2>
+            <p>Upload an image containing a QR code to extract its content</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png,.bmp,.gif" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📷</span>
+                    <span>Select QR image to scan</span>
+                </label>
+                <p class="file-info">No file selected</p>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔍</span>
+                Scan QR Code
+            </button>
+        </form>
+
+        {% if result %}
+        <div class="result-section">
+            <h3>Scan Result:</h3>
+            <div class="result-box">
+                {{ result }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="instructions">
+            <h3>Best Practices:</h3>
+            <ul>
+                <li>Ensure the QR code is clear and well-lit</li>
+                <li>Avoid blurry or distorted images</li>
+                <li>The QR code should occupy most of the image</li>
+                <li>Use PNG or JPG formats for best results</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="QR Code Preview" style="max-width: 300px; max-height: 300px;">`;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        imagePreview.innerHTML = `
+            <div class="preview-placeholder">
+                <span>👁️</span>
+                <p>Image preview will appear here</p>
+            </div>
+        `;
+    }
+});
+
+document.getElementById('scanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/scan-qr', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const resultSection = document.getElementById('resultSection');
+            const resultBox = document.getElementById('resultBox');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            resultBox.innerHTML = `
+                <div class="result-success">
+                    <span class="result-icon">✅</span>
+                    <div class="result-content">
+                        <strong>QR Content Found:</strong>
+                        <p class="result-text">${data.data}</p>
+                    </div>
+                </div>
+            `;
+            
+            resultSection.style.display = 'block';
+            
+            // Scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Copy functionality
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(data.data).then(() => {
+                    copyBtn.textContent = '✅ Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = '📋 Copy to Clipboard';
+                    }, 2000);
+                });
+            };
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error scanning QR code. Please try again.');
+    });
+});
+</script>
+</body>
+</html>

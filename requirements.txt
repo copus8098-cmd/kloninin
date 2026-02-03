@@ -1,0 +1,8 @@
+flask
+pillow
+qrcode
+opencv-python
+pyzbar
+pdf2docx
+python-docx
+patool

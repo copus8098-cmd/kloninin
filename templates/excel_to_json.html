@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Excel → JSON{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>📊 تحويل Excel إلى JSON</h1>
+
+    <form action="/excel-to-json" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".xls,.xlsx" required>
+        <button type="submit">تحويل</button>
+    </form>
+
+    {% if success %}
+    <div class="result">
+        <h2>✅ تم التحويل بنجاح!</h2>
+        <a href="{{ url_for('static', filename='uploads/' + json_file) }}" download>
+            ⬇ تحميل JSON
+        </a>
+    </div>
+    {% endif %}
+
+    {% if error %}
+        <p style="color:red;">⚠ {{ error }}</p>
+    {% endif %}
+
+    <p><a href="/">🏠 العودة للصفحة الرئيسية</a></p>
+</div>
+{% endblock %}

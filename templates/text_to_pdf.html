@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Text to PDF{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>📝 Text → PDF</h2>
+
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        <textarea name="text" rows="10" placeholder="اكتب النص هنا..." required></textarea>
+
+        <label>حجم الخط:</label>
+        <input type="number" name="font_size" value="14" min="8" max="48">
+
+        <button type="submit">📄 تحويل إلى PDF</button>
+    </form>
+</div>
+{% endblock %}

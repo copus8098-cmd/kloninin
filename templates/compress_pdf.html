@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress PDF - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+ {% extends "base.html" %}
+
+{% block title %}Home - Smart Convert Pro{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>🗜️ Compress PDF Files</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Reduce PDF File Size</h2>
+            <p>Compress PDF documents while maintaining acceptable quality</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".pdf" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📄</span>
+                    <span>Select PDF file to compress</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="compression-level">
+                <h3>Compression Level:</h3>
+                <div class="level-options">
+                    <label class="level-option">
+                        <input type="radio" name="compression_level" value="low" checked>
+                        <div class="level-card">
+                            <span class="level-icon">🌟</span>
+                            <span class="level-name">Low Compression</span>
+                            <span class="level-desc">Best quality, less size reduction</span>
+                            <span class="level-size">~20-30% smaller</span>
+                        </div>
+                    </label>
+                    
+                    <label class="level-option">
+                        <input type="radio" name="compression_level" value="medium">
+                        <div class="level-card">
+                            <span class="level-icon">⚖️</span>
+                            <span class="level-name">Medium Compression</span>
+                            <span class="level-desc">Balanced quality and size</span>
+                            <span class="level-size">~40-50% smaller</span>
+                        </div>
+                    </label>
+                    
+                    <label class="level-option">
+                        <input type="radio" name="compression_level" value="high">
+                        <div class="level-card">
+                            <span class="level-icon">🚀</span>
+                            <span class="level-name">High Compression</span>
+                            <span class="level-desc">Maximum size reduction</span>
+                            <span class="level-size">~60-70% smaller</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="compression-settings">
+                <h3>Advanced Settings:</h3>
+                <div class="settings-grid">
+                    <div class="setting">
+                        <label>
+                            <input type="checkbox" name="downsample_images" checked>
+                            Downsample images
+                        </label>
+                        <small>Reduce image resolution</small>
+                    </div>
+                    <div class="setting">
+                        <label>
+                            <input type="checkbox" name="compress_text" checked>
+                            Compress text
+                        </label>
+                        <small>Apply text compression</small>
+                    </div>
+                    <div class="setting">
+                        <label>
+                            <input type="checkbox" name="remove_metadata">
+                            Remove metadata
+                        </label>
+                        <small>Reduce file size further</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compression-preview">
+                <h3>Size Reduction Preview:</h3>
+                <div class="size-comparison">
+                    <div class="size-original">
+                        <span class="size-label">Original:</span>
+                        <span class="size-value" id="originalSize">-- MB</span>
+                    </div>
+                    <div class="size-arrow">→</div>
+                    <div class="size-compressed">
+                        <span class="size-label">Compressed:</span>
+                        <span class="size-value" id="compressedSize">-- MB</span>
+                    </div>
+                </div>
+                <div class="size-bar">
+                    <div class="size-bar-fill" id="sizeBarFill" style="width: 50%;"></div>
+                </div>
+                <div class="size-savings">
+                    <span id="savingsPercentage">--%</span> reduction
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🗜️</span>
+                Compress PDF
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>When to use each level:</h3>
+            <ul>
+                <li><strong>Low:</strong> Important documents, printing, archiving</li>
+                <li><strong>Medium:</strong> Web uploads, email attachments</li>
+                <li><strong>High:</strong> Mobile viewing, quick sharing</li>
+            </ul>
+            
+            <h3>Note:</h3>
+            <p>Compression may affect image quality in the PDF. Preview recommended before finalizing.</p>
+        </div>
+    </div>
+    {% endblock %}
+
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const originalSize = document.getElementById('originalSize');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        
+        fileInfo.textContent = `Selected: ${file.name} (${sizeMB} MB)`;
+        fileInfo.style.color = '#00ffcc';
+        originalSize.textContent = `${sizeMB} MB`;
+        
+        updateCompressionPreview(parseFloat(sizeMB));
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        originalSize.textContent = '-- MB';
+        updateCompressionPreview(0);
+    }
+});
+
+// Update compression preview when settings change
+document.querySelectorAll('input[name="compression_level"], input[type="checkbox"]').forEach(input => {
+    input.addEventListener('change', updateCompressionEstimate);
+});
+
+function updateCompressionEstimate() {
+    const originalSizeText = document.getElementById('originalSize').textContent;
+    if (originalSizeText !== '-- MB') {
+        const sizeMB = parseFloat(originalSizeText);
+        updateCompressionPreview(sizeMB);
+    }
+}
+
+function updateCompressionPreview(originalSizeMB) {
+    if (originalSizeMB === 0) {
+        document.getElementById('compressedSize').textContent = '-- MB';
+        document.getElementById('sizeBarFill').style.width = '50%';
+        document.getElementById('savingsPercentage').textContent = '--%';
+        return;
+    }
+    
+    // Get compression level
+    const compressionLevel = document.querySelector('input[name="compression_level"]:checked').value;
+    
+    // Get advanced settings
+    const downsample = document.querySelector('input[name="downsample_images"]').checked;
+    const compressText = document.querySelector('input[name="compress_text"]').checked;
+    const removeMetadata = document.querySelector('input[name="remove_metadata"]').checked;
+    
+    // Calculate compression factor
+    let compressionFactor = 0.7; // Default: 30% reduction
+    
+    switch (compressionLevel) {
+        case 'low':
+            compressionFactor = 0.8; // 20% reduction
+            break;
+        case 'medium':
+            compressionFactor = 0.55; // 45% reduction
+            break;
+        case 'high':
+            compressionFactor = 0.35; // 65% reduction
+            break;
+    }
+    
+    // Apply advanced settings
+    if (downsample) compressionFactor *= 0.9;
+    if (compressText) compressionFactor *= 0.95;
+    if (removeMetadata) compressionFactor *= 0.98;
+    
+    const compressedSizeMB = originalSizeMB * compressionFactor;
+    const savingsPercentage = Math.round((1 - compressionFactor) * 100);
+    
+    document.getElementById('compressedSize').textContent = `${compressedSizeMB.toFixed(2)} MB`;
+    document.getElementById('sizeBarFill').style.width = `${savingsPercentage}%`;
+    document.getElementById('savingsPercentage').textContent = `${savingsPercentage}%`;
+}
+</script>
+</body>
+</html>

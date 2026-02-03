@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word to PDF - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📝 Word to PDF Converter</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Convert Word Documents to PDF</h2>
+            <p>Convert DOC and DOCX files to PDF format with preserved formatting</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".doc,.docx" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📄</span>
+                    <span>Select Word file (DOC or DOCX)</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="conversion-settings">
+                <h3>PDF Settings:</h3>
+                <div class="settings-grid">
+                    <div class="setting">
+                        <label for="page_size">Page Size:</label>
+                        <select id="page_size" name="page_size">
+                            <option value="A4">A4</option>
+                            <option value="Letter">Letter</option>
+                            <option value="Legal">Legal</option>
+                            <option value="A3">A3</option>
+                        </select>
+                    </div>
+                    <div class="setting">
+                        <label for="orientation">Orientation:</label>
+                        <select id="orientation" name="orientation">
+                            <option value="portrait">Portrait</option>
+                            <option value="landscape">Landscape</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>Important:</h3>
+                <p>This conversion requires Microsoft Word to be installed on the server. If you encounter errors, please ensure Microsoft Word is installed.</p>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔄</span>
+                Convert to PDF
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Features:</h3>
+            <ul>
+                <li>Preserves formatting, images, and tables</li>
+                <li>Supports DOC and DOCX formats</li>
+                <li>Configurable page size and orientation</li>
+                <li>High-quality PDF output</li>
+            </ul>
+            
+            <h3>Limitations:</h3>
+            <ul>
+                <li>Requires Microsoft Word installation</li>
+                <li>Complex formatting may not convert perfectly</li>
+                <li>Macros and active content are not preserved</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+    }
+});
+</script>
+</body>
+</html>

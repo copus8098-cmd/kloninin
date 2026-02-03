@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🎨 Image Format Converter</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Convert Image Formats</h2>
+            <p>Convert between different image formats while maintaining quality</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png,.bmp,.gif,.webp,.tiff" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📷</span>
+                    <span>Select image file</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="image-preview">
+                <h3>Image Preview:</h3>
+                <div class="preview-box" id="imagePreview">
+                    <div class="preview-placeholder">
+                        <span>🖼️</span>
+                        <p>Image preview will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="format-selection">
+                <h3>Convert To:</h3>
+                <div class="format-grid">
+                    <label class="format-option">
+                        <input type="radio" name="format" value="png" checked>
+                        <div class="format-card">
+                            <span class="format-icon">🖼️</span>
+                            <span class="format-name">PNG</span>
+                            <span class="format-desc">Lossless, transparency</span>
+                        </div>
+                    </label>
+                    
+                    <label class="format-option">
+                        <input type="radio" name="format" value="jpg">
+                        <div class="format-card">
+                            <span class="format-icon">📸</span>
+                            <span class="format-name">JPG</span>
+                            <span class="format-desc">High compression</span>
+                        </div>
+                    </label>
+                    
+                    <label class="format-option">
+                        <input type="radio" name="format" value="webp">
+                        <div class="format-card">
+                            <span class="format-icon">🌐</span>
+                            <span class="format-name">WEBP</span>
+                            <span class="format-desc">Modern, efficient</span>
+                        </div>
+                    </label>
+                    
+                    <label class="format-option">
+                        <input type="radio" name="format" value="bmp">
+                        <div class="format-card">
+                            <span class="format-icon">💾</span>
+                            <span class="format-name">BMP</span>
+                            <span class="format-desc">Uncompressed</span>
+                        </div>
+                    </label>
+                    
+                    <label class="format-option">
+                        <input type="radio" name="format" value="gif">
+                        <div class="format-card">
+                            <span class="format-icon">🎬</span>
+                            <span class="format-name">GIF</span>
+                            <span class="format-desc">Animation, 256 colors</span>
+                        </div>
+                    </label>
+                    
+                    <label class="format-option">
+                        <input type="radio" name="format" value="tiff">
+                        <div class="format-card">
+                            <span class="format-icon">🏢</span>
+                            <span class="format-name">TIFF</span>
+                            <span class="format-desc">Professional, layered</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔄</span>
+                Convert Image
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Format Information:</h3>
+            <div class="format-details">
+                <p><strong>PNG:</strong> Best for graphics, logos, and images with transparency</p>
+                <p><strong>JPG:</strong> Best for photographs, smaller file size</p>
+                <p><strong>WEBP:</strong> Modern format, excellent compression</p>
+                <p><strong>BMP:</strong> Uncompressed, large files, high quality</p>
+                <p><strong>GIF:</strong> Supports animation, limited colors</p>
+                <p><strong>TIFF:</strong> Professional use, supports layers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 300px; max-height: 200px;">`;
+        };
+        reader.readAsDataURL(file);
+        
+        // Auto-select format based on original
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'jpg' || ext === 'jpeg') {
+            document.querySelector('input[value="png"]').checked = true;
+        }
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        imagePreview.innerHTML = `
+            <div class="preview-placeholder">
+                <span>🖼️</span>
+                <p>Image preview will appear here</p>
+            </div>
+        `;
+    }
+});
+</script>
+</body>
+</html>

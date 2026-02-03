@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split PDF - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>✂️ Split PDF Files</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Split PDF Documents</h2>
+            <p>Extract specific pages or split PDF into multiple files</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form" id="splitForm">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".pdf" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📄</span>
+                    <span>Select PDF file to split</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="split-options">
+                <h3>Split Method:</h3>
+                <div class="option-tabs">
+                    <label class="option-tab">
+                        <input type="radio" name="split_option" value="single" checked>
+                        <div class="tab-content">
+                            <span class="tab-icon">📄</span>
+                            <span class="tab-title">Extract Each Page</span>
+                            <span class="tab-desc">Create separate PDF for each page</span>
+                        </div>
+                    </label>
+                    
+                    <label class="option-tab">
+                        <input type="radio" name="split_option" value="range">
+                        <div class="tab-content">
+                            <span class="tab-icon">🎯</span>
+                            <span class="tab-title">Extract Range</span>
+                            <span class="tab-desc">Select specific pages to extract</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="range-selection" id="rangeSelection" style="display: none;">
+                <h3>Select Pages:</h3>
+                <div class="range-controls">
+                    <div class="range-input">
+                        <label for="start_page">From Page:</label>
+                        <input type="number" id="start_page" name="start_page" min="1" value="1">
+                    </div>
+                    <div class="range-input">
+                        <label for="end_page">To Page:</label>
+                        <input type="number" id="end_page" name="end_page" min="1" value="1">
+                    </div>
+                </div>
+                <div class="page-preview" id="pagePreview">
+                    <p>Upload a PDF to see page count</p>
+                </div>
+            </div>
+
+            <div class="output-options">
+                <h3>Output Options:</h3>
+                <div class="options-grid">
+                    <label class="option">
+                        <input type="checkbox" name="preserve_quality" checked>
+                        Preserve quality
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="include_bookmarks">
+                        Include bookmarks
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">✂️</span>
+                Split PDF
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Usage Tips:</h3>
+            <ul>
+                <li><strong>Extract Each Page:</strong> Creates individual PDF files for every page</li>
+                <li><strong>Extract Range:</strong> Extract specific pages as a new PDF</li>
+                <li>When extracting each page, you'll receive a ZIP file containing all pages</li>
+                <li>Page range must be valid (start ≤ end)</li>
+            </ul>
+            
+            <h3>Best Practices:</h3>
+            <ul>
+                <li>Check page count before selecting range</li>
+                <li>Use "Preserve quality" for important documents</li>
+                <li>Large PDFs may take longer to split</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+let totalPages = 0;
+
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const pagePreview = document.getElementById('pagePreview');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        // Estimate pages based on file size (approximation)
+        // In a real app, you would use a PDF library to get actual page count
+        const estimatedPages = Math.max(1, Math.round(file.size / 10240)); // 10KB per page estimate
+        
+        totalPages = estimatedPages;
+        pagePreview.innerHTML = `
+            <div class="page-info">
+                <span class="info-icon">📊</span>
+                <div>
+                    <p><strong>Estimated pages:</strong> ${estimatedPages}</p>
+                    <p><small>Upload to get exact page count</small></p>
+                </div>
+            </div>
+        `;
+        
+        // Update end page input
+        const endPageInput = document.getElementById('end_page');
+        endPageInput.value = estimatedPages;
+        endPageInput.max = estimatedPages;
+        
+        // Update start page input
+        const startPageInput = document.getElementById('start_page');
+        startPageInput.max = estimatedPages;
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        pagePreview.innerHTML = `<p>Upload a PDF to see page count</p>`;
+    }
+});
+
+// Show/hide range selection
+document.querySelectorAll('input[name="split_option"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const rangeSelection = document.getElementById('rangeSelection');
+        if (this.value === 'range') {
+            rangeSelection.style.display = 'block';
+        } else {
+            rangeSelection.style.display = 'none';
+        }
+    });
+});
+
+// Validate range inputs
+document.getElementById('start_page').addEventListener('change', function() {
+    const endPage = document.getElementById('end_page');
+    if (parseInt(this.value) > parseInt(endPage.value)) {
+        endPage.value = this.value;
+    }
+});
+
+document.getElementById('end_page').addEventListener('change', function() {
+    const startPage = document.getElementById('start_page');
+    if (parseInt(this.value) < parseInt(startPage.value)) {
+        startPage.value = this.value;
+    }
+});
+</script>
+</body>
+</html>

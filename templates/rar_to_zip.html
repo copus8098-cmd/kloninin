@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}RAR → ZIP{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>🗜️ تحويل RAR إلى ZIP</h1>
+
+    <form action="/rar-to-zip" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".rar" required>
+        <button type="submit">تحويل</button>
+    </form>
+
+    {% if success %}
+    <div class="result">
+        <h2>✅ تم التحويل بنجاح!</h2>
+        <a href="{{ url_for('static', filename='uploads/' + zip_file) }}" download>
+            ⬇ تحميل ZIP
+        </a>
+    </div>
+    {% endif %}
+
+    {% if error %}
+        <p style="color:red;">⚠ {{ error }}</p>
+    {% endif %}
+
+    <p><a href="/">🏠 العودة للصفحة الرئيسية</a></p>
+</div>
+{% endblock %}

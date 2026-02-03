@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Barcode - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📦 Barcode Reader</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Read Barcode</h2>
+            <p>Upload an image containing barcode(s) to extract information</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form" id="barcodeForm">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png,.bmp,.gif" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📷</span>
+                    <span>Select barcode image</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="image-preview">
+                <h3>Image Preview:</h3>
+                <div class="preview-box" id="imagePreview">
+                    <div class="preview-placeholder">
+                        <span>📊</span>
+                        <p>Image preview will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔍</span>
+                Read Barcode
+            </button>
+        </form>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <h3>Barcode Results:</h3>
+            <div class="result-box" id="resultBox">
+                <!-- Results will appear here -->
+            </div>
+            <button class="copy-btn" id="copyBtn">
+                📋 Copy All to Clipboard
+            </button>
+        </div>
+
+        <div class="instructions">
+            <h3>Supported Barcode Types:</h3>
+            <div class="barcode-types">
+                <span class="barcode-tag">CODE128</span>
+                <span class="barcode-tag">EAN-13</span>
+                <span class="barcode-tag">EAN-8</span>
+                <span class="barcode-tag">UPC-A</span>
+                <span class="barcode-tag">UPC-E</span>
+                <span class="barcode-tag">QR Code</span>
+                <span class="barcode-tag">DataMatrix</span>
+            </div>
+            
+            <h3>Tips:</h3>
+            <ul>
+                <li>Ensure barcode is straight and well-lit</li>
+                <li>Image should be clear and focused</li>
+                <li>Multiple barcodes in one image are supported</li>
+                <li>For best results, use high contrast images</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Barcode Preview" style="max-width: 300px; max-height: 300px;">`;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        imagePreview.innerHTML = `
+            <div class="preview-placeholder">
+                <span>📊</span>
+                <p>Image preview will appear here</p>
+            </div>
+        `;
+    }
+});
+
+document.getElementById('barcodeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/read-barcode', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const resultSection = document.getElementById('resultSection');
+            const resultBox = document.getElementById('resultBox');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            if (data.barcodes && data.barcodes.length > 0) {
+                let resultHTML = '<div class="result-success">';
+                data.barcodes.forEach((barcode, index) => {
+                    resultHTML += `
+                        <div class="barcode-result">
+                            <span class="result-icon">📦</span>
+                            <div class="result-content">
+                                <strong>Barcode #${index + 1}</strong>
+                                <p><strong>Type:</strong> ${barcode.type}</p>
+                                <p><strong>Data:</strong> ${barcode.data}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                resultHTML += '</div>';
+                
+                resultBox.innerHTML = resultHTML;
+                
+                // Prepare text for copying
+                const copyText = data.barcodes.map(b => 
+                    `Type: ${b.type}\nData: ${b.data}`
+                ).join('\n\n');
+                
+                copyBtn.onclick = function() {
+                    navigator.clipboard.writeText(copyText).then(() => {
+                        copyBtn.textContent = '✅ Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 Copy All to Clipboard';
+                        }, 2000);
+                    });
+                };
+            } else {
+                resultBox.innerHTML = `
+                    <div class="result-error">
+                        <span class="result-icon">❌</span>
+                        <div class="result-content">
+                            <strong>No barcodes found</strong>
+                            <p>Try a different image</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultSection.style.display = 'block';
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error reading barcode. Please try again.');
+    });
+});
+</script>
+</body>
+</html>

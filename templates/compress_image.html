@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Convert Pro{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>🗜️ Compress Image</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Image Compression</h2>
+            <p>Reduce image size while keeping acceptable quality</p>
+        </div>
+
+        {% if error %}
+            <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">🖼️</span>
+                    <span>Select image</span>
+                </label>
+            </div>
+
+            <div class="options">
+                <label for="quality">
+                    Compression Quality (1 = high compression, 95 = high quality)
+                </label>
+                <input 
+                    type="range" 
+                    name="quality" 
+                    id="quality" 
+                    min="10" 
+                    max="95" 
+                    value="60"
+                    oninput="qualityValue.innerText = this.value"
+                >
+                <p>Quality: <strong id="qualityValue">60</strong></p>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                🗜️ Compress Image
+            </button>
+
+        </form>
+
+        <div class="instructions">
+            <h3>Tips:</h3>
+            <ul>
+                <li>Lower quality = smaller file size</li>
+                <li>Best for JPG images</li>
+                <li>PNG images may not compress much</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

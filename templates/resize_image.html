@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+{% block title %}Resize Image{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>📐 Resize Image</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Resize and Scale Images</h2>
+            <p>Change image dimensions while maintaining quality</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form" id="resizeForm">
+            <div class="file-input-area">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png,.bmp,.gif,.webp" required>
+                <label for="file" class="file-label">
+                    <span class="upload-icon">📷</span>
+                    <span>Select image to resize</span>
+                </label>
+                <p class="file-info" id="fileInfo">No file selected</p>
+            </div>
+
+            <div class="image-preview">
+                <h3>Image Preview:</h3>
+                <div class="preview-box" id="imagePreview">
+                    <div class="preview-placeholder">
+                        <span>🖼️</span>
+                        <p>Image preview will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resize-methods">
+                <h3>Resize Method:</h3>
+                <div class="method-tabs">
+                    <label class="method-tab">
+                        <input type="radio" name="resize_method" value="dimensions" checked>
+                        <div class="tab-content">
+                            <span class="tab-icon">📏</span>
+                            <span class="tab-title">Custom Dimensions</span>
+                            <span class="tab-desc">Set exact width and height</span>
+                        </div>
+                    </label>
+                    
+                    <label class="method-tab">
+                        <input type="radio" name="resize_method" value="percentage">
+                        <div class="tab-content">
+                            <span class="tab-icon">📊</span>
+                            <span class="tab-title">Percentage</span>
+                            <span class="tab-desc">Scale by percentage</span>
+                        </div>
+                    </label>
+                    
+                    <label class="method-tab">
+                        <input type="radio" name="resize_method" value="presets">
+                        <div class="tab-content">
+                            <span class="tab-icon">🎯</span>
+                            <span class="tab-title">Preset Sizes</span>
+                            <span class="tab-desc">Common dimensions</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Custom Dimensions -->
+            <div class="resize-option active" id="dimensionsOption">
+                <h3>Custom Dimensions:</h3>
+                <div class="dimension-inputs">
+                    <div class="dimension-input">
+                        <label for="width">Width (px):</label>
+                        <input type="number" id="width" name="width" min="1" value="800">
+                        <div class="dimension-lock">
+                            <input type="checkbox" id="lockAspect" checked>
+                            <label for="lockAspect">🔒 Lock aspect ratio</label>
+                        </div>
+                    </div>
+                    <div class="dimension-input">
+                        <label for="height">Height (px):</label>
+                        <input type="number" id="height" name="height" min="1" value="600">
+                    </div>
+                </div>
+                <div class="aspect-ratio">
+                    <span id="aspectRatio">Aspect Ratio: 4:3</span>
+                </div>
+            </div>
+
+            <!-- Percentage -->
+            <div class="resize-option" id="percentageOption" style="display: none;">
+                <h3>Scale by Percentage:</h3>
+                <div class="percentage-input">
+                    <input type="range" id="percentageSlider" min="10" max="500" value="100">
+                    <div class="percentage-value">
+                        <input type="number" id="percentageInput" name="percentage" min="10" max="500" value="100">
+                        <span>%</span>
+                    </div>
+                </div>
+                <div class="percentage-preview">
+                    <p>New size: <span id="percentageSize">-- x -- px</span></p>
+                </div>
+            </div>
+
+            <!-- Preset Sizes -->
+            <div class="resize-option" id="presetsOption" style="display: none;">
+                <h3>Preset Sizes:</h3>
+                <div class="preset-grid">
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="social_media">
+                        <div class="preset-card">
+                            <span class="preset-icon">📱</span>
+                            <span class="preset-name">Social Media</span>
+                            <span class="preset-size">1080x1080 px</span>
+                        </div>
+                    </label>
+                    
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="web_banner">
+                        <div class="preset-card">
+                            <span class="preset-icon">🌐</span>
+                            <span class="preset-name">Web Banner</span>
+                            <span class="preset-size">728x90 px</span>
+                        </div>
+                    </label>
+                    
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="mobile_wallpaper">
+                        <div class="preset-card">
+                            <span class="preset-icon">📲</span>
+                            <span class="preset-name">Mobile Wallpaper</span>
+                            <span class="preset-size">1080x1920 px</span>
+                        </div>
+                    </label>
+                    
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="desktop_wallpaper">
+                        <div class="preset-card">
+                            <span class="preset-icon">🖥️</span>
+                            <span class="preset-name">Desktop Wallpaper</span>
+                            <span class="preset-size">1920x1080 px</span>
+                        </div>
+                    </label>
+                    
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="document">
+                        <div class="preset-card">
+                            <span class="preset-icon">📄</span>
+                            <span class="preset-name">Document</span>
+                            <span class="preset-size">1200x1600 px</span>
+                        </div>
+                    </label>
+                    
+                    <label class="preset-option">
+                        <input type="radio" name="preset_size" value="print_4x6">
+                        <div class="preset-card">
+                            <span class="preset-icon">🖨️</span>
+                            <span class="preset-name">Print 4x6</span>
+                            <span class="preset-size">1200x1800 px</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="resize-options">
+                <h3>Resize Options:</h3>
+                <div class="options-grid">
+                    <div class="option">
+                        <label for="resize_algorithm">Algorithm:</label>
+                        <select id="resize_algorithm" name="resize_algorithm">
+                            <option value="lanczos" selected>Lanczos (high quality)</option>
+                            <option value="bicubic">Bicubic</option>
+                            <option value="bilinear">Bilinear</option>
+                            <option value="nearest">Nearest Neighbor</option>
+                        </select>
+                    </div>
+                    <div class="option">
+                        <label for="output_format">Output Format:</label>
+                        <select id="output_format" name="output_format">
+                            <option value="same" selected>Same as original</option>
+                            <option value="png">PNG</option>
+                            <option value="jpg">JPG</option>
+                            <option value="webp">WEBP</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-icon">🔄</span>
+                Resize Image
+            </button>
+        </form>
+
+        <div class="instructions">
+            <h3>Resize Algorithms:</h3>
+            <ul>
+                <li><strong>Lanczos:</strong> Best quality, sharp edges</li>
+                <li><strong>Bicubic:</strong> Good quality, smooth edges</li>
+                <li><strong>Bilinear:</strong> Fast, decent quality</li>
+                <li><strong>Nearest Neighbor:</strong> Fastest, pixelated edges</li>
+            </ul>
+            
+            <h3>Tips:</h3>
+            <ul>
+                <li>Lock aspect ratio to prevent distortion</li>
+                <li>For enlarging, use Lanczos for best results</li>
+                <li>For web use, consider using WEBP format</li>
+                <li>Check preview before finalizing</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+let originalWidth = 0;
+let originalHeight = 0;
+let aspectRatio = 0;
+
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        // Show image preview and get dimensions
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                originalWidth = img.width;
+                originalHeight = img.height;
+                aspectRatio = originalWidth / originalHeight;
+                
+                imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 300px; max-height: 200px;">`;
+                
+                // Update dimension inputs
+                document.getElementById('width').value = originalWidth;
+                document.getElementById('height').value = originalHeight;
+                
+                // Update aspect ratio display
+                updateAspectRatioDisplay();
+                
+                // Update percentage preview
+                updatePercentagePreview();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        imagePreview.innerHTML = `
+            <div class="preview-placeholder">
+                <span>🖼️</span>
+                <p>Image preview will appear here</p>
+            </div>
+        `;
+    }
+});
+
+// Switch between resize methods
+document.querySelectorAll('input[name="resize_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Hide all options
+        document.getElementById('dimensionsOption').style.display = 'none';
+        document.getElementById('percentageOption').style.display = 'none';
+        document.getElementById('presetsOption').style.display = 'none';
+        
+        // Show selected option
+        document.getElementById(`${this.value}Option`).style.display = 'block';
+        
+        // Update form submission
+        updateFormData();
+    });
+});
+
+// Aspect ratio locking
+const widthInput = document.getElementById('width');
+const heightInput = document.getElementById('height');
+const lockAspectCheckbox = document.getElementById('lockAspect');
+
+widthInput.addEventListener('input', function() {
+    if (lockAspectCheckbox.checked && aspectRatio > 0) {
+        heightInput.value = Math.round(this.value / aspectRatio);
+        updateAspectRatioDisplay();
+    }
+});
+
+heightInput.addEventListener('input', function() {
+    if (lockAspectCheckbox.checked && aspectRatio > 0) {
+        widthInput.value = Math.round(this.value * aspectRatio);
+        updateAspectRatioDisplay();
+    }
+});
+
+function updateAspectRatioDisplay() {
+    const width = parseInt(widthInput.value) || 1;
+    const height = parseInt(heightInput.value) || 1;
+    const ratio = width / height;
+    
+    // Find simplified ratio
+    const simplified = simplifyRatio(width, height);
+    document.getElementById('aspectRatio').textContent = 
+        `Aspect Ratio: ${simplified.w}:${simplified.h} (${ratio.toFixed(2)})`;
+}
+
+function simplifyRatio(w, h) {
+    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+    const divisor = gcd(w, h);
+    return {
+        w: w / divisor,
+        h: h / divisor
+    };
+}
+
+// Percentage resize
+const percentageSlider = document.getElementById('percentageSlider');
+const percentageInput = document.getElementById('percentageInput');
+
+percentageSlider.addEventListener('input', function() {
+    percentageInput.value = this.value;
+    updatePercentagePreview();
+});
+
+percentageInput.addEventListener('input', function() {
+    const value = Math.min(500, Math.max(10, this.value));
+    percentageSlider.value = value;
+    this.value = value;
+    updatePercentagePreview();
+});
+
+function updatePercentagePreview() {
+    if (originalWidth > 0 && originalHeight > 0) {
+        const percentage = parseInt(percentageInput.value) / 100;
+        const newWidth = Math.round(originalWidth * percentage);
+        const newHeight = Math.round(originalHeight * percentage);
+        document.getElementById('percentageSize').textContent = 
+            `${newWidth} x ${newHeight} px`;
+    }
+}
+
+// Preset sizes
+document.querySelectorAll('input[name="preset_size"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        updateFormData();
+    });
+});
+
+function updateFormData() {
+    // This function would prepare form data based on selected method
+    // In a real implementation, you would adjust the form submission
+}
+</script>
+{% endblock %}

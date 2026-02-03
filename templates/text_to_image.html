@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}تحويل نص إلى صورة{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>✍️ تحويل نص إلى صورة</h1>
+
+    <!-- نموذج رفع النص -->
+    <form action="{{ url_for('misc.text_to_image') }}" method="post">
+        <textarea name="text" rows="4" placeholder="اكتب النص هنا..." required>{{ text if text else '' }}</textarea>
+        
+        <!-- خيارات إضافية -->
+        <div class="options">
+            <label>نوع الخط:
+                <select name="font_family">
+                    <option value="Arial">Arial</option>
+                    <option value="Cairo">Cairo (Arabic)</option>
+                    <option value="Amiri">Amiri (Arabic)</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                </select>
+            </label>
+
+            <label>حجم الخط:
+                <input type="number" name="font_size" value="32" min="10" max="100">
+            </label>
+
+            <label>لون النص:
+                <input type="color" name="text_color" value="#2c3e50">
+            </label>
+
+            <label>لون الخلفية:
+                <input type="color" name="bg_color" value="#ffffff">
+            </label>
+
+            <label>محاذاة النص:
+                <select name="text_align">
+                    <option value="center">Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+            </label>
+
+            <label>عرض الصورة:
+                <input type="number" name="image_width" value="800" min="100">
+            </label>
+
+            <label>ارتفاع الصورة:
+                <input type="number" name="image_height" value="400" min="100">
+            </label>
+        </div>
+
+        <button type="submit">تحويل النص إلى صورة</button>
+    </form>
+
+    <hr>
+
+    <!-- عرض النتيجة -->
+    {% if image %}
+    <div class="result">
+        <h2>✅ تم التحويل:</h2>
+        <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Converted Image">
+        <br>
+        <a href="{{ url_for('static', filename='uploads/' + image) }}" download>⬇ تحميل الصورة</a>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <h3>الخدمات الأخرى:</h3>
+    <ul>
+        <li><a href="{{ url_for('image.image_to_pdf') }}">🖼️ تحويل صورة إلى PDF</a></li>
+        <li><a href="{{ url_for('qr.qr_create') }}">📦 إنشاء QR Code</a></li>
+    </ul>
+
+    <p><a href="{{ url_for('index') }}">🏠 العودة للصفحة الرئيسية</a></p>
+</div>
+{% endblock %}

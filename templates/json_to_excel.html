@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Excel - Smart Convert Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🔀 JSON to Excel Converter</h1>
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="converter-card">
+        <div class="card-header">
+            <h2>Convert JSON Data to Excel</h2>
+            <p>Transform JSON data into Excel spreadsheets for analysis and reporting</p>
+        </div>
+
+        <div class="input-methods">
+            <div class="method-tabs">
+                <button class="method-tab active" data-method="upload">📁 Upload JSON File</button>
+                <button class="method-tab" data-method="paste">📝 Paste JSON Text</button>
+                <button class="method-tab" data-method="url">🌐 Load from URL</button>
+            </div>
+
+            <!-- Upload JSON File -->
+            <form method="POST" enctype="multipart/form-data" class="input-form active" id="uploadForm">
+                <div class="file-input-area">
+                    <input type="file" name="file" id="jsonFile" accept=".json,.txt" required>
+                    <label for="jsonFile" class="file-label">
+                        <span class="upload-icon">📄</span>
+                        <span>Select JSON file</span>
+                    </label>
+                    <p class="file-info" id="fileInfo">No file selected</p>
+                </div>
+
+                <div class="json-preview" id="uploadPreview">
+                    <h4>File Preview:</h4>
+                    <div class="preview-box" id="uploadPreviewBox">
+                        <p>No file selected</p>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Paste JSON Text -->
+            <form method="POST" class="input-form" id="pasteForm">
+                <div class="text-input-area">
+                    <label for="json_text">Paste JSON text:</label>
+                    <textarea id="json_text" name="json_text" rows="8" placeholder='{"data": [{"name": "John", "age": 30}, {"name": "Jane", "age": 25}]}' required></textarea>
+                    <div class="text-counter">
+                        <span id="charCount">0</span> characters
+                    </div>
+                </div>
+
+                <div class="json-preview" id="pastePreview">
+                    <h4>JSON Preview:</h4>
+                    <div class="preview-box" id="pastePreviewBox">
+                        <p>Enter JSON text above</p>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Load from URL -->
+            <form method="POST" class="input-form" id="urlForm">
+                <div class="url-input-area">
+                    <label for="json_url">JSON URL:</label>
+                    <input type="url" id="json_url" name="json_url" placeholder="https://api.example.com/data.json" required>
+                    <button type="button" class="fetch-btn" id="fetchBtn">Fetch JSON</button>
+                </div>
+
+                <div class="json-preview" id="urlPreview">
+                    <h4>URL Response Preview:</h4>
+                    <div class="preview-box" id="urlPreviewBox">
+                        <p>Enter URL and click Fetch JSON</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="conversion-options">
+            <h3>Conversion Options:</h3>
+            <div class="options-grid">
+                <div class="option">
+                    <label for="output_format">Output Format:</label>
+                    <select id="output_format" name="output_format">
+                        <option value="xlsx" selected>Excel (.xlsx)</option>
+                        <option value="csv">CSV (.csv)</option>
+                        <option value="xls">Excel 97-2003 (.xls)</option>
+                    </select>
+                </div>
+                
+                <div class="option">
+                    <label for="sheet_name">Sheet Name:</label>
+                    <input type="text" id="sheet_name" name="sheet_name" value="Data" placeholder="Sheet name">
+                </div>
+            </div>
+
+            <div class="advanced-options">
+                <h4>Advanced Options:</h4>
+                <div class="options-grid">
+                    <label class="option">
+                        <input type="checkbox" name="include_headers" checked>
+                        Include headers
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="flatten_nested" checked>
+                        Flatten nested objects
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="preserve_types">
+                        Preserve data types
+                    </label>
+                </div>
+                
+                <div class="option">
+                    <label for="date_format">Date Format:</label>
+                    <select id="date_format" name="date_format">
+                        <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                        <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                        <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                        <option value="iso">ISO 8601</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h3>Excel Preview:</h3>
+            <div class="excel-preview" id="excelPreview">
+                <div class="excel-table-placeholder">
+                    <div class="excel-header">
+                        <div class="excel-cell">Column A</div>
+                        <div class="excel-cell">Column B</div>
+                        <div class="excel-cell">Column C</div>
+                    </div>
+                    <div class="excel-row">
+                        <div class="excel-cell">Sample data 1</div>
+                        <div class="excel-cell">Sample data 2</div>
+                        <div class="excel-cell">Sample data 3</div>
+                    </div>
+                    <p>Preview will appear after JSON is loaded</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" form="uploadForm" class="convert-btn">
+            <span class="btn-icon">🔀</span>
+            Convert JSON to Excel
+        </button>
+
+        <div class="instructions">
+            <h3>JSON Format Examples:</h3>
+            <div class="code-examples">
+                <div class="code-example">
+                    <h4>Simple Array:</h4>
+                    <pre><code>[
+  {"name": "John", "age": 30},
+  {"name": "Jane", "age": 25}
+]</code></pre>
+                </div>
+                <div class="code-example">
+                    <h4>Nested Object:</h4>
+                    <pre><code>{
+  "users": [
+    {"name": "John", "details": {"age": 30, "city": "NYC"}},
+    {"name": "Jane", "details": {"age": 25, "city": "LA"}}
+  ]
+}</code></pre>
+                </div>
+            </div>
+            
+            <h3>Tips:</h3>
+            <ul>
+                <li>JSON must be valid and properly formatted</li>
+                <li>Use "Flatten nested objects" for complex JSON structures</li>
+                <li>Excel supports up to 1,048,576 rows per sheet</li>
+                <li>For large files, use .xlsx format</li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+    <header>
+        <h1> Smart Convert Pro </h1>
+        <p>Seamlessly transform your files with calm and precision</p>
+    </header>
+
+    <div class="grid-menu">
+        <a href="/image-to-pdf" class="card">
+            <span class="icon">📷</span>
+            <span class="label">Image to PDF</span>
+        </a>
+        
+        <a href="/text-to-image" class="card">
+            <span class="icon">✏️</span>
+            <span class="label">Text to Image</span>
+        </a>
+
+        <a href="/qr-create" class="card">
+            <span class="icon">🔳</span>
+            <span class="label">Generate QR</span>
+        </a>
+
+        <a href="/qr-read" class="card">
+            <span class="icon">🔍</span>
+            <span class="label">Scan QR</span>
+        </a>
+
+        <a href="/pdf-word" class="card">
+            <span class="icon">📄</span>
+            <span class="label">PDF ↔ Word</span>
+        </a>
+
+        <a href="/image-convert" class="card">
+            <span class="icon">🎨</span>
+            <span class="label">Format Converter</span>
+        </a>
+        <a href="/merge-pdf" class="card">
+    <span class="icon">🔗</span>
+    <span class="label">Merge PDF</span>
+</a>
+<a href="/split-pdf" class="card">
+    <span class="icon">✂️</span>
+    <span class="label">Split PDF</span>
+</a>
+<a href="/compress-pdf" class="card">
+    <span class="icon">🗜️</span>
+    <span class="label">Compress PDF</span>
+</a>
+
+<a href="/word-to-pdf" class="card">
+    <span class="icon">📝</span>
+    <span class="label">Word to PDF</span>
+</a>
+
+<a href="/remove-bg" class="card">
+    <span class="icon">🎭</span>
+    <span class="label">Remove BG</span>
+</a>
+<a href="/resize-image" class="card">
+    <span class="icon">📐</span>
+    <span class="label">Resize Image</span>
+</a>
+
+<a href="/json-to-excel" class="card">
+    <span class="icon">🔀</span>
+    <span class="label">JSON to Excel</span>
+</a>
+<a href="/json-to-excel" class="card">
+    <span class="icon">I TO T</span>
+    <span class="label">JSON to Excel</span>
+</a>
+    </div>
+</div>
+</div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.method-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const method = this.dataset.method;
+        
+        // Update active tab
+        document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Show active form
+        document.querySelectorAll('.input-form').forEach(form => {
+            form.classList.remove('active');
+        });
+        document.getElementById(`${method}Form`).classList.add('active');
+        
+        // Update convert button form
+        const convertBtn = document.querySelector('.convert-btn');
+        convertBtn.setAttribute('form', `${method}Form`);
+    });
+});
+
+// File upload preview
+document.getElementById('jsonFile').addEventListener('change', function(e) {
+    const fileInfo = document.getElementById('fileInfo');
+    const previewBox = document.getElementById('uploadPreviewBox');
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        fileInfo.style.color = '#00ffcc';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                previewBox.innerHTML = `<pre>${JSON.stringify(json, null, 2).substring(0, 500)}${e.target.result.length > 500 ? '...' : ''}</pre>`;
+                previewJson(json);
+            } catch (error) {
+                previewBox.innerHTML = `<p class="error">Invalid JSON format</p>`;
+            }
+        };
+        reader.readAsText(file);
+    } else {
+        fileInfo.textContent = 'No file selected';
+        fileInfo.style.color = '#888';
+        previewBox.innerHTML = `<p>No file selected</p>`;
+    }
+});
+
+// Text paste preview
+document.getElementById('json_text').addEventListener('input', function() {
+    const charCount = document.getElementById('charCount');
+    const previewBox = document.getElementById('pastePreviewBox');
+    
+    charCount.textContent = this.value.length;
+    
+    if (this.value.trim()) {
+        try {
+            const json = JSON.parse(this.value);
+            previewBox.innerHTML = `<pre>${JSON.stringify(json, null, 2).substring(0, 500)}${this.value.length > 500 ? '...' : ''}</pre>`;
+            previewJson(json);
+        } catch (error) {
+            previewBox.innerHTML = `<p class="error">Invalid JSON format</p>`;
+        }
+    } else {
+        previewBox.innerHTML = `<p>Enter JSON text above</p>`;
+    }
+});
+
+// URL fetch
+document.getElementById('fetchBtn').addEventListener('click', function() {
+    const url = document.getElementById('json_url').value;
+    const previewBox = document.getElementById('urlPreviewBox');
+    
+    if (!url) {
+        previewBox.innerHTML = `<p class="error">Please enter a URL</p>`;
+        return;
+    }
+    
+    previewBox.innerHTML = `<p>Fetching JSON from URL...</p>`;
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(json => {
+            previewBox.innerHTML = `<pre>${JSON.stringify(json, null, 2).substring(0, 500)}...</pre>`;
+            previewJson(json);
+        })
+        .catch(error => {
+            previewBox.innerHTML = `<p class="error">Failed to fetch JSON: ${error.message}</p>`;
+        });
+});
+
+function previewJson(json) {
+    const excelPreview = document.getElementById('excelPreview');
+    
+    // Simple preview generation
+    try {
+        let data = json;
+        
+        // If json is an object with a data property
+        if (typeof json === 'object' && !Array.isArray(json)) {
+            // Find first array property
+            for (const key in json) {
+                if (Array.isArray(json[key])) {
+                    data = json[key];
+                    break;
+                }
+            }
+        }
+        
+        if (Array.isArray(data) && data.length > 0) {
+            // Get headers from first object
+            const firstItem = data[0];
+            const headers = Object.keys(firstItem);
+            
+            // Generate preview HTML
+            let html = '<div class="excel-table">';
+            html += '<div class="excel-header">';
+            headers.forEach(header => {
+                html += `<div class="excel-cell">${header}</div>`;
+            });
+            html += '</div>';
+            
+            // Show first few rows
+            const previewRows = Math.min(3, data.length);
+            for (let i = 0; i < previewRows; i++) {
+                html += '<div class="excel-row">';
+                headers.forEach(header => {
+                    const value = data[i][header];
+                    html += `<div class="excel-cell">${value !== undefined ? String(value) : ''}</div>`;
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+            
+            if (data.length > previewRows) {
+                html += `<p class="preview-note">+ ${data.length - previewRows} more rows...</p>`;
+            }
+            
+            excelPreview.innerHTML = html;
+        } else {
+            excelPreview.innerHTML = `
+                <div class="excel-table-placeholder">
+                    <p>JSON data is not in a tabular format</p>
+                    <p>Try flattening nested objects</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        excelPreview.innerHTML = `
+            <div class="excel-table-placeholder">
+                <p class="error">Error previewing JSON: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Update preview when options change
+document.querySelectorAll('input[name], select[name]').forEach(input => {
+    input.addEventListener('change', function() {
+        // In a real implementation, you would update the preview
+        // based on the selected options
+    });
+});
+</script>
+</body>
+</html>
